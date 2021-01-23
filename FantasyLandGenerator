@@ -1,20 +1,36 @@
 /*
 Author: Sarnesh Arulnathan
 Date: June 26th, 2020
+Description: Program that generates a fantasy land of a height and width as specified by the user. Utilizes a dynamically allocated 
+2D array to create an array of terrain unique to each type of fantasy land.
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
+//faward declares all necessary functions
+char NewFromRuralLand();
 char NewFromForest();
+char NewFromTown(); 
+char NewFromWater();
+char NewFromCity();
+char NewFromMountain();
+
+void green();
+void reset();
 int RandomInRange();
+char PickLandType();
 char** GenerateLand(int width, int height);
+char GenerateNeighbor(char item);
+void PrintLand(char** Land, int width, int height);
+
 int main(int argc, char** argv)
 {
 	int width, height;
 	printf("Welcome to Fantasy Land Generator!\n");
 	
+	//goto statement to make sure that user input is in betweeen 20 and 50
 	widthLand:
 	printf("Enter width of land: ");
 	scanf(" %d", &width);
@@ -23,6 +39,7 @@ int main(int argc, char** argv)
 		goto widthLand;
 	}
 	
+	//goto statement to make sure that user input is in betweeen 20 and 50
 	heightLand:
 	printf("Enter height of land: ");
 	scanf(" %d", &height);
@@ -30,19 +47,42 @@ int main(int argc, char** argv)
 		printf("Error pick a number between 20 and 50\n");
 		goto heightLand;
 	}
-	char **Land = GenerateLand(width, height);
+	  	
+	 //allows the random number picked to be unique on each program execution 	
+	srand(time(0));
 	
+	
+	char **Land = GenerateLand(width, height);
+
+	PrintLand(Land, width, height);
+
+	//free's up the allocated memory given to the 2D array
+	free(Land);
+	
+	return 0;
 }
 
+//generates a random number in between 0-99
 int RandomInRange()
 {
-  srand(time(0));
   return rand() % 100;	
 }
 
+void green  (){
+  printf("\033[0;32m");
+}
+
+void reset  (){
+  printf("\033[0m");
+}
+
+//function for RuralLands
 char NewFromRuralLand()
 {
+	//gets a random number between 0-99 assigns it to variable ruralTypeOfLand
 	int ruralTypeOfLand = RandomInRange();
+	
+	//based on specifications generates a neighbor object with these probabililies for the function RuralLand
 	if(ruralTypeOfLand < 40){
 		return 'R';
 	} else if(ruralTypeOfLand >= 40 && ruralTypeOfLand < 65){
@@ -53,11 +93,15 @@ char NewFromRuralLand()
 		return 'W';
 	} else if(ruralTypeOfLand >= 90 && ruralTypeOfLand < 100){
 		return 'M';
-	}	
+	} else {	
+	return 0;
+	}
 }
 
+//function for Forests
 char NewFromForest()
 {
+	//similar code structure to RuralLands tweaked to probabilites of neighbor objects for the Forest function (as are the next 4 functions)
 	int forestTypeOfLand = RandomInRange();
 	if(forestTypeOfLand < 20){
 		return 'R';
@@ -69,9 +113,12 @@ char NewFromForest()
 		return 'W';
 	} else if(forestTypeOfLand >= 85 && forestTypeOfLand < 100){
 		return 'M';
+	}else {	
+	return 0;
 	}
 }
 
+//function for Towns
 char NewFromTown()
 {
 	int townTypeOfLand = RandomInRange();
@@ -87,9 +134,12 @@ char NewFromTown()
 		return 'C';	
 	} else if(townTypeOfLand >= 95 && townTypeOfLand < 100){
 		return 'M';
+	}else {	
+	return 0;
 	}
 }
 
+//function for Cities
 char NewFromCity()
 {
 	int cityTypeOfLand = RandomInRange();
@@ -103,9 +153,12 @@ char NewFromCity()
 		return 'C';
 	} else if(cityTypeOfLand >= 90 && cityTypeOfLand < 100){
 		return 'M';	
-	} 
+	}else {	
+	return 0;
+	}
 }
 
+//function for Mountain
 char NewFromMountain()
 {
 	int mountainTypeOfLand = RandomInRange();
@@ -121,9 +174,12 @@ char NewFromMountain()
 		return 'C';	
 	} else if(mountainTypeOfLand >= 50 && mountainTypeOfLand < 100){
 		return 'M';
+	} else {	
+	return 0;
 	}
 }
 
+//function for Water
 char NewFromWater()
 {
 	int waterTypeOfLand = RandomInRange();
@@ -139,13 +195,16 @@ char NewFromWater()
 		return 'C';	
 	} else if(waterTypeOfLand >= 90 && waterTypeOfLand < 100){
 		return 'M';
+	}else {	
+	return 0;
 	}
 }
 
+//function for unique upper left corner of 2D array
 char PickLandType()
 {
-	srand(time(0));
-	int typeOfLand = rand()%5;	  
+	//grabs a random number between 0 and 5 
+	int typeOfLand = rand()%6;	  
 	if(typeOfLand == 0){
 		return 'R';
 	} else if(typeOfLand == 1){
@@ -158,28 +217,122 @@ char PickLandType()
 		return 'C';
 	} else if(typeOfLand == 5){
 		return 'M';
+	} else {	
+	return 0;
 	}
+	
+}
+
+//generates neighbor of each item in array based of NewFrom() functions
+char GenerateNeighbor(char item)
+{
+	//utilizes a switch statement to call correct NewFrom() function dependant on the neighbor object
+	switch(item)
+	{
+		case 'R':
+			return NewFromRuralLand();
+			break;
+		case 'F':
+			return NewFromForest();
+			break;
+		case 'T':
+			return NewFromTown();	
+			break;
+		case 'W':
+			return NewFromWater();
+			break;
+		case 'C':
+			return NewFromCity();
+			break;
+		case 'M':	
+			return NewFromMountain();
+			break;	
+		default:
+			printf("Error!");	
+			break;
+	}
+	return 0;
 }
 
 char** GenerateLand(int width, int height)
 {
-	int i, x, y;
+	//Double pointer for charcter variable GenLand
+	char** GenLand;
+	int i;
 	
-	char **Land = malloc(width * sizeof(char*));
+	//alloactes necessary memory space for the width of the 2D array
+	GenLand = malloc(width * sizeof(char*));
 	
 	for(i = 0; i < width; i++){
-		Land[i] = malloc(sizeof(char) * height);
+		//alloacted necessary memory space for the height of the 2D array
+		GenLand[i] = malloc(sizeof(char) * height);
 	}
 	
+	//random upper left corner of array indexed at [0][0]
+	char Rand = PickLandType();
 	
-	for( x = 0; x < width; i++){
-		for( y = 0; y < height; i++){
-		
-		Land[x][y] = NewFromForest();
-		
+	int x,y;
+	
+    //nested for loop to fill the dynamically allocated 2D array height on the outer width on the inner
+	for( y = 0; y < height ; y++){
+		for( x = 0; x < width; x++){
+			
+			//assigns the upper left corner of the array to the random character from above
+			GenLand[y][x] = Rand;
+			
+			//fills the first row 
+			if(x > 0 && y == 0){
+				//gets each new character from the neighbor to the left (x-1)
+				char Rand1 = GenerateNeighbor(GenLand[y][x-1]);
+				//assigns each character into it's place in the element
+				GenLand[y][x] = Rand1;
+			} 
+			
+			//fills the first column
+			if(y > 0 && x ==0) {
+				//gets each new character from the neighbor above it (y-1)
+				char Rand2 = GenerateNeighbor(GenLand[y-1][x]);
+				GenLand[y][x] = Rand2;
+			} 
+			
+			//fills the rest of the array
+			if(x > 0 && y > 0) {
+				//gets a random number between 0 and 1 to simulate a coin flip
+				int coinFlip = rand()%2;
+				
+				if(coinFlip == 0){
+					//if the "flip" is a 0 generates the item based on the data above
+					char Rand3 = GenerateNeighbor(GenLand[y-1][x]);
+						GenLand[y][x] = Rand3;
+				}
+				if(coinFlip == 1){
+					//if the "flip" is a 1 generates the item based on the data to the left
+					char Rand4 = GenerateNeighbor(GenLand[y][x-1]);
+						GenLand[y][x] = Rand4;
+				}
+			}
+			
+	    }
 	}
-	
+	//returns the filled array so the main class can use it			
+	return GenLand;				
 }
 
-return Land;
+//prints the filled array
+void PrintLand(char** Land, int width, int height){
+	int x, y;
+	for( y = 0; y < height; y++){
+		for( x = 0; x < width; x++){
+		if(Land[y][x] == 'R'){
+			printf("Hello");
+		}	
+		printf("%c", Land[y][x]);
+		
+			//after each row is filled prints next line on a new line
+			if(x == width - 1){
+				printf("\n");
+			}
+	    }
+	}
 }
+
